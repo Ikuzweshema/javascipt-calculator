@@ -2,9 +2,10 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useState } from 'react';
 
-function App() {
+export default function App() {
     const [expression, setExpression] = useState("");
-    const [answer, setAnswer] = useState("")
+    const [answer, setAnswer] = useState("0");
+    
     const trimed = expression.trim()
     function isOperator(symbol) {
         return /[+\-*/%]/.test(symbol);
@@ -37,16 +38,46 @@ function App() {
             }
         }
         else if (key == ".") {
-           const lastNumber=expression.split(/[+\-*/%]/g).pop()
+            const lastNumber = expression.split(/[+\-*/%]/g).pop()
+            if (lastNumber?.includes(".")) return;
+
             setExpression(answer + key)
 
         }
+        else {
+            setExpression(expression + key)
+        }
     }
     function calculate() {
+      if (isOperator(trimed.charAt(trimed.length - 1))) return;
+        const parts=trimed.split(" ");
+        const newParts=[];
+        for(let i=parts.length-1; i>=0; i--){
+            if(["*","/","+"].includes(parts[i]) && isOperator(parts[i-1])){
+                newParts.unshift(parts[i])
+                const j=0;
+                const k=i-1;
+                while (isOperator(parts[k])) {
+                    k--;
+                    j--;
 
-    }
+                }
+                i-=j;
+            }
+            else{
+              newParts.unshift(parts[i])
+            }
+            const newExpression=newParts.join("")
+            if (isOperator(newExpression.charAt(0))) {
+                setAnswer(eval(answer+newExpression))
+            }
+            else{
+                setAnswer(eval(newExpression))  
+            }
+            setExpression("")
+    }}
     return (
-        <div className="container mt-5">
+        <div className="container mt-5" >
             <div className="row justify-content-center">
                 <div className="col-12 col-md-6 col-lg-4">
 
@@ -60,7 +91,7 @@ function App() {
                         </div>
                         <div className="row g-2">
                             {[
-                                ['C', '%', , '-/+', 'X'],
+                                ['C', '%', , '_/+', '*'],
                                 ['7', '8', '9', '-'],
                                 ['4', '5', '6', '+'],
                                 ['1', '2', '3', , '/',],
@@ -106,4 +137,3 @@ function getButtonClass(buttonText) {
     }
 }
 
-export default App;
