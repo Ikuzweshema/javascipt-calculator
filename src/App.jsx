@@ -6,7 +6,16 @@ function App() {
     const [expression, setExpression] = useState(0);
     const [answer, setAnswer] = useState(0)
     function buttonPress(key) {
-
+         if (key=="C") {
+            setAnswer(0)
+            setExpression("")
+         }
+         else if(key=="-"){
+            if(answer=="") return;
+            setAnswer(
+                answer.toString().charAt(0)==="-"? answer.slice(1):"-"+answer
+            )
+         }
     }
 
     return (
